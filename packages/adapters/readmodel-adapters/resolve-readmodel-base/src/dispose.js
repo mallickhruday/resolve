@@ -1,10 +1,16 @@
-const reset = ({ metaApi, internalContext }, options) => {
+const dispose = ({ metaApi, internalContext }, options = {}) => {
+  if (options != null && options.constructor !== Object) {
+    throw new Error('Dispose options should be plain object if provided')
+  }
+
   if (internalContext.disposePromise) {
     return internalContext.disposePromise
   }
 
   const disposePromise = (async () => {
-    await metaApi.drop(options)
+    if (Object.keys(options).length > 0) {
+      await metaApi.drop(options)
+    }
     await metaApi.disconnect()
   })()
 
@@ -16,4 +22,4 @@ const reset = ({ metaApi, internalContext }, options) => {
   return disposePromise
 }
 
-export default reset
+export default dispose
